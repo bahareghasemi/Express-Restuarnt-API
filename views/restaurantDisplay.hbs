@@ -1,0 +1,34 @@
+    <h2>Restaurants:</h2>
+    <div class="info">
+        <p>Page: {{page}}</p>
+        <p>Per Page: {{perPage}}</p>
+        <p>Borough (Optional): {{borough}}</p>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Restaurant ID</th>
+                <th>Cuisine</th>
+                <th>Address</th>
+                <th>Grades</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each restaurants}}
+                <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.restaurant_id}}</td>
+                    <td>{{this.cuisine}}</td>
+                    <td>{{this.address.building}} {{this.address.street}}, {{this.address.zipcode}}</td>
+                    <td>
+                        <ul>
+                            {{#each this.grades}}
+                                <li>Date: {{date}}, Grade: {{grade}}, Score: {{score}}</li>
+                            {{/each}}
+                        </ul>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
