@@ -5,11 +5,11 @@ No part of this assignment has been copied manually or electronically from any o
 (including web sites) or distributed to other students.
 Name:Bahare Ghasemi Student ID:N01538197 Date:2024-04-11
 ******************************************************************************/
-// const url = process.env.DB_CONNECTION_STRING;
+//const url = process.env.DB_CONNECTION_STRING;
 const usern=process.env.USERN;
 const host = process.env.HOST;
 const database = process.env.DATABASE;
-const password = process.env.PASSWORD;
+const password = process.env.PASS;
 const url = `mongodb+srv://${usern}:${password}@${host}/${database}`;
 const mongoose = require('mongoose');
 const Restaurant = require("../models/restaurant");

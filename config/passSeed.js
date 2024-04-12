@@ -1,10 +1,9 @@
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
 
 const run = async() => {
-    // Generate random salt value between 5 and 10
-    const saltRandom = 10;
-    const pass = process.env.PASSWORD;
+    // Generate random salt value 5
+    const saltRandom = 5;
+    const pass = "bahare";
     const password =await bcrypt.hash(pass, saltRandom);
     console.log(`PASSWORD=${password}\nSALT=${saltRandom}`);
 }
