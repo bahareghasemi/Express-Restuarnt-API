@@ -1,0 +1,10 @@
+[
+    {
+        "user":"bahare",
+        "passHash":"$2a$05$y.HgWpwfSyRubugFrqJX5OPiUudDvj3mh5tddPPU9fJCirGlW8oVO"
+    },
+    {
+        "user":"sample",
+        "passHash":"$2a$05$PHRxFCa4dPnRlUVkLHrBQeWTUl52qcO/CwNW.PHcHquqfotL8RTVK"
+    }
+]

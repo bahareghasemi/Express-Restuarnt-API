@@ -6,14 +6,18 @@ No part of this assignment has been copied manually or electronically from any o
 Name:Bahare Ghasemi Student ID:N01538197 Date:2024-04-11
 ******************************************************************************/
 require("dotenv").config();
+const saltRandom = 5;
 const express = require("express");
 const mongoose = require("mongoose");
 const appConfig = require("./package.json");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const path = require('node:path');
 const app = express();
 const database = require("./config/database");
 const bodyParser = require("body-parser"); 
+const authList = require('./config/authList.json');
 
 const port = process.env.PORT || 8000;
 app.use(bodyParser.urlencoded({ extended: true })); 
@@ -25,8 +29,58 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Initialize the database before starting the server
 database.initialize().then(() => {
   
+    //User Authentication
+    
+    app.get('/api/token',  async(req, res) => {
+      const auth = req.headers.authorization;
+      if(!auth){
+        res.status(401).send('Authorization data not found');
+        return;
+      }
+      [type, cred] = auth.split(' ');
+      if(type!="Basic"){
+        res.status(401).send('Only supported authentication mode is Basic');
+        return;      
+      }
+          
+      const decodedCred = Buffer.from(cred, 'base64').toString('utf-8');
+      [user, pass]=decodedCred.split(':');
+      const queriedUser = authList.find(a=>a.user===user);
+      
+      let success = false;
+      if(queriedUser){
+        success = await bcrypt.compare(pass, queriedUser.passHash);
+      }
+      
+      if(!success){      
+        res.status(401).send('Authentication failed, invalid userName/password');
+      }
+      else
+      {
+        const payload = { username: user, role: 'user', authorized: success};
+        const token = jwt.sign(payload, process.env.SECRET_KEY);
+        res.status(200).send({token: token});
+      }
+      
+  });
+  
+  // Middleware for JWT verification
+  const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+      req.user = decoded;
+      next();
+    });
+  };
+
     //Add a new retaurant in database
-    app.post('/api/restaurants', async (req, res) => {
+    app.post('/api/restaurants', verifyToken, async (req, res) => {
         try {
           if (!req.query || Object.keys(req.query).length === 0)  {
             return res.status(400).json({ message: 'It is empty or missing restuarant!' });
@@ -48,7 +102,7 @@ database.initialize().then(() => {
       res.render('restaurantForm.hbs');
     })
     //Result restaurant search
-    app.post('/api/restaurants/search', 
+    app.post('/api/restaurants/search', verifyToken, 
     [
       body('page').isNumeric().withMessage('Page must be a number'),
       body('perPage').isNumeric().withMessage('PerPage must be a number'),
@@ -126,7 +180,7 @@ database.initialize().then(() => {
     });
 
     //Updating a restaurant by Id
-    app.put('/api/restaurants/:id',async(req,res)=>{
+    app.put('/api/restaurants/:id', verifyToken,async(req,res)=>{
       try {
           const rest = await database.updateRestaurantById(req.params.id, req.query);
           if (!rest) {
@@ -144,7 +198,7 @@ database.initialize().then(() => {
     });
 
     //Deletion of an existing restaurant based on _id as route parameter
-    app.delete("/api/restaurants/:id", async (req, res) => {
+    app.delete("/api/restaurants/:id", verifyToken, async (req, res) => {
       try {
           const Id = req.params.id;
           const rest = await database.deleteRestaurantById(Id);

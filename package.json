@@ -5,6 +5,7 @@
     "express": "^4.19.2",
     "express-handlebars": "^7.1.2",
     "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.1"
   },
   "name": "5315-project",
