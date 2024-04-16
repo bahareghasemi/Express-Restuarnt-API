@@ -12,6 +12,8 @@ const mongoose = require("mongoose");
 const appConfig = require("./package.json");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const session = require('express-session'); 
+const cookieParser = require('cookie-parser'); 
 
 const path = require('node:path');
 const app = express();
@@ -26,11 +28,18 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 const { body, param, query, validationResult } = require('express-validator'); 
 const { engine } = require('express-handlebars');
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(cookieParser());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true
+}));
+
 // Initialize the database before starting the server
 database.initialize().then(() => {
-  
-    //User Authentication
-    
+    //Token Generating by calling below route
     app.get('/api/token',  async(req, res) => {
       const auth = req.headers.authorization;
       if(!auth){
@@ -57,19 +66,23 @@ database.initialize().then(() => {
       }
       else
       {
+        req.session.user = { username: user, role: 'user' };
         const payload = { username: user, role: 'user', authorized: success};
         const token = jwt.sign(payload, process.env.SECRET_KEY);
+        res.cookie('token', token, { httpOnly: true });
         res.status(200).send({token: token});
+        
       }
       
   });
   
   // Middleware for JWT verification
   const verifyToken = (req, res, next) => {
-    const token = req.headers.authorization;
-    if (!token) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
       return res.status(401).json({ message: 'No token provided' });
     }
+    const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
       if (err) {
         return res.status(401).json({ message: 'Invalid token' });
