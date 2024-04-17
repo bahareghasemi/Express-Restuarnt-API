@@ -31,13 +31,11 @@ const { engine } = require('express-handlebars');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
-
-// app.use(session({
-//   secret: process.env.SESSION_SECRET,
-//   resave: false,
-//   saveUninitialized: true
-// }));
-
+app.use(session({
+  secret: process.env.SECRET_KEY,
+  resave: false,
+  saveUninitialized: true
+}));
 
 // Initialize the database before starting the server
 database.initialize().then(() => {
