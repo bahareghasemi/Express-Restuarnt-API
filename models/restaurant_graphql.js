@@ -1,6 +1,7 @@
- const { buildSchema } = require('graphql');
-//const { gql } = require('apollo-server');
-const schema = buildSchema(`
+const { gql } = require('apollo-server');
+
+const typeDefs = gql`
+"A Restaurant Object"
   type Address {
     building: String
     coord: [Float]
@@ -17,19 +18,19 @@ const schema = buildSchema(`
 
   type Restaurant {
     _id: ID!
-    name: String!
-    address: Address!
-    cuisine: String!
-    grades: [Grade!]!
-    restaurant_id: String!
+    name: String
+    address: Address
+    cuisine: String
+    grades: [Grade!]
+    restaurant_id: String
   }
 
   input RestaurantInput {
     name: String!
-    address: AddressInput!
-    cuisine: String!
-    grades: [GradeInput!]!
-    restaurant_id: String!
+    address: AddressInput
+    cuisine: String
+    grades: [GradeInput]
+    restaurant_id: String
   }
 
   input AddressInput {
@@ -48,9 +49,9 @@ const schema = buildSchema(`
 
   type Query {
     restaurant(id: ID!): Restaurant
-    restaurants: [Restaurant]
+    restaurants(page: Int!, perPage: Int!, borough: String): [Restaurant]
   }
 
-`);
+`;
 
-module.exports = schema;
+module.exports = typeDefs;
