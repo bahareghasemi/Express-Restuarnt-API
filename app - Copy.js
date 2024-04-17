@@ -14,15 +14,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const session = require('express-session'); 
 const cookieParser = require('cookie-parser'); 
-const { graphqlHTTP } = require('express-graphql');
 
 const path = require('node:path');
 const app = express();
 const database = require("./config/database");
 const bodyParser = require("body-parser"); 
 const authList = require('./config/authList.json');
-const resolvers = require('./config/resolver');
-const schema = require("./models/restaurant_graphql");
 
 const port = process.env.PORT || 8000;
 app.use(bodyParser.urlencoded({ extended: true })); 
@@ -30,17 +27,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "application/vnd.api+json" })); 
 const { body, param, query, validationResult } = require('express-validator'); 
 const { engine } = require('express-handlebars');
-//const { buildSchema } = require("graphql");
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
 
-// app.use(session({
-//   secret: process.env.SESSION_SECRET,
-//   resave: false,
-//   saveUninitialized: true
-// }));
-
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true
+}));
 
 // Initialize the database before starting the server
 database.initialize().then(() => {
@@ -71,10 +66,10 @@ database.initialize().then(() => {
       }
       else
       {
-        // req.session.user = { username: user, role: 'user' };
+        req.session.user = { username: user, role: 'user' };
         const payload = { username: user, role: 'user', authorized: success};
         const token = jwt.sign(payload, process.env.SECRET_KEY);
-        // res.cookie('token', token, { httpOnly: true });
+        res.cookie('token', token, { httpOnly: true });
         res.status(200).send({token: token});
         
       }
@@ -234,28 +229,6 @@ database.initialize().then(() => {
           res.status(500).json({error:'Internal Server Error!'});
       }
     });
-
- 
-
-const Restaurant = require("./models/restaurant_graphql"); 
-const resolvers = require('./config/resolver');
-
-//const server = new ApolloServer({ Restaurant, resolvers });
-const testFunc =async(i)=>{
-  let iid = { id: '5eb3d668b31de5d588f4292a' };
-  let p=await resolvers.restaurants();
-  return i+2;
-}
-
-let ii=7;
-let a = testFunc(ii);
-
-// GraphQL endpoint
-app.use('/graphql', graphqlHTTP({
-schema: Restaurant,
-rootValue: resolvers,
-graphiql: true,
-}));
 
 
       
