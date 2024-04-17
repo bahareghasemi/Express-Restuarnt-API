@@ -1,13 +1,11 @@
 const database = require("./database");
 const resolvers = {
   Query: {
-    restaurant: async (_, { id }) => {
-      console.log(`Fetching restaurant with ID: ${id}`);
+    getRestaurantbyId: async (_, { id }) => {
       const restaurant = await database.getRestaurantById(id); 
       return restaurant;
     },
-    restaurants: async (_, {page, perPage, borough}) => {
-      console.log('Fetching all restaurants');
+    getAllRestaurants: async (_, {page, perPage, borough}) => {
       const restaurants = await database.getAllRestaurants(page, perPage, borough);
       return restaurants;
     }

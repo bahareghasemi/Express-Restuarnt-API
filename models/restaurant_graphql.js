@@ -48,8 +48,8 @@ const typeDefs = gql`
   }
 
   type Query {
-    restaurant(id: ID!): Restaurant
-    restaurants(page: Int!, perPage: Int!, borough: String): [Restaurant]
+    getRestaurantbyId(id: ID!): Restaurant
+    getAllRestaurants(page: Int!, perPage: Int!, borough: String): [Restaurant]
   }
 
 `;
