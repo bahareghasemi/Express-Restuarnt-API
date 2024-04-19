@@ -34,6 +34,17 @@ app.use(cookieParser());
 
 // Initialize the database before starting the server
 database.initialize().then(() => {
+  app.get("/", async (_req, res) => {
+    try {
+      console.log('fetching employees');
+      //const employees = await Employee.find();
+      return res.json("OK!");
+    } catch (reason) {
+      console.error('there was an error', reason);
+      return res.status(500).json(reason);
+    }
+  });
+  
     //Token Generating by calling below route
     app.get('/api/token',  async(req, res) => {
       const auth = req.headers.authorization;
