@@ -254,4 +254,6 @@ database.initialize().then(() => {
   console.error('Failed to start Apollo Server:', error);
   process.exit(1);
 });
+
+module.exports = app;
   
