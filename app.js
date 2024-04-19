@@ -242,7 +242,7 @@ database.initialize().then(() => {
     console.log(`Graphql Server ready at ${url}`);
   });
 
-  const serverApp=app.listen(port, () => {
+  app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
 }).catch((error) => {
@@ -250,5 +250,5 @@ database.initialize().then(() => {
   process.exit(1);
 });
 
-module.exports = serverApp;
+module.exports = app;
   
