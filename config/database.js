@@ -6,8 +6,7 @@ No part of this assignment has been copied manually or electronically from any o
 Name:Bahare Ghasemi Student ID:N01538197 Date:2024-04-18
 ********************************************************************************/
  const url = process.env.DB_CONNECTION_STRING;
-// const url = "mongodb+srv://bahareghasemiphh:Sherwin2023@cluster0.wvy0j1o.mongodb.net/5315-project";
-const mongoose = require('mongoose');
+ const mongoose = require('mongoose');
 const Restaurant = require("../models/restaurant");
 
 const initialize = async () => {
