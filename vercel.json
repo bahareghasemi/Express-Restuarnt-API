@@ -11,5 +11,8 @@
       "source": "/(.*)",
       "destination": "/app.js"
     }
+  ],
+  "routes": [
+    { "handle": "serverApp" }
   ]
 }
