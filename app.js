@@ -3,8 +3,8 @@ ITE5315 – Project
 I declare that this assignment is my own work in accordance with Humber Academic Policy.
 No part of this assignment has been copied manually or electronically from any other source
 (including web sites) or distributed to other students.
-Name:Bahare Ghasemi Student ID:N01538197 Date:2024-04-11
-******************************************************************************/
+Name:Bahare Ghasemi Student ID:N01538197 Date:2024-04-18
+********************************************************************************/
 require("dotenv").config();
 const saltRandom = 5;
 const express = require("express");
@@ -31,11 +31,11 @@ const { engine } = require('express-handlebars');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
-app.use(session({
-  secret: process.env.SECRET_KEY,
-  resave: false,
-  saveUninitialized: true
-}));
+// app.use(session({
+//   session: process.env.SECRET_KEY,
+//   resave: false,
+//   saveUninitialized: true
+// }));
 
 // Initialize the database before starting the server
 database.initialize().then(() => {
@@ -66,10 +66,9 @@ database.initialize().then(() => {
       }
       else
       {
-        // req.session.user = { username: user, role: 'user' };
         const payload = { username: user, role: 'user', authorized: success};
         const token = jwt.sign(payload, process.env.SECRET_KEY);
-        // res.cookie('token', token, { httpOnly: true });
+        res.cookie('token', token);
         res.status(200).send({token: token});
         
       }
@@ -78,11 +77,21 @@ database.initialize().then(() => {
   
   // Middleware for JWT verification
   const verifyToken = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: 'No token provided' });
+    //There are two ways to send token, by cookie or in header authorization
+    let authHeader=req.cookies;
+    let token;
+    if (authHeader)
+      token=authHeader.token;
+    //read authorization in header
+    else if (!authHeader)
+    {
+      authHeader = req.headers.authorization;
+      token = authHeader.split(' ')[1];
+      if (!authHeader) {
+        return res.status(401).json({ message: 'No token provided' });
+      }
     }
-    const token = authHeader.split(' ')[1];
+    
     jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
       if (err) {
         return res.status(401).json({ message: 'Invalid token' });
@@ -115,7 +124,7 @@ database.initialize().then(() => {
       res.render('restaurantForm.hbs');
     })
     //Result restaurant search
-    app.post('/api/restaurants/search', verifyToken, 
+    app.post('/api/restaurants/search', 
     [
       body('page').isNumeric().withMessage('Page must be a number'),
       body('perPage').isNumeric().withMessage('PerPage must be a number'),
