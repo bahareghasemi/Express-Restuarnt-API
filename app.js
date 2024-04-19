@@ -31,11 +31,6 @@ const { engine } = require('express-handlebars');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
-// app.use(session({
-//   session: process.env.SECRET_KEY,
-//   resave: false,
-//   saveUninitialized: true
-// }));
 
 // Initialize the database before starting the server
 database.initialize().then(() => {
@@ -247,7 +242,7 @@ database.initialize().then(() => {
     console.log(`Graphql Server ready at ${url}`);
   });
 
-  app.listen(port, () => {
+  const serverApp=app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
 }).catch((error) => {
@@ -255,5 +250,5 @@ database.initialize().then(() => {
   process.exit(1);
 });
 
-module.exports = app;
+module.exports = serverApp;
   
