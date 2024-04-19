@@ -243,7 +243,7 @@ database.initialize().then(() => {
   const typeDefs = require("./models/restaurant_graphql"); 
   const resolvers = require('./config/resolver');
   const server = new ApolloServer({typeDefs,resolvers});
-  server.listen(3000).then(({ url }) => {
+  server.listen(4000).then(({ url }) => {
     console.log(`Graphql Server ready at ${url}`);
   });
 
